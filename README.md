@@ -4,7 +4,12 @@
 
 This project analyzes restaurant operations data to identify profitability drivers, cost inefficiencies, and opportunities to improve margins.
 
-The analysis focuses on validating the data first, then building a reliable foundation for SQL analysis, Python reporting, dashboarding, and business recommendations.
+The analysis follows a structured workflow:
+
+1. Data validation
+2. Clean data preparation
+3. SQL-based analysis
+4. Business insights and recommendations
 
 ---
 
@@ -55,19 +60,24 @@ data/
     └── validation_summary.csv
 
 outputs/
-└── validation_results_final.csv
+├── validation_results_final.csv
+├── monthly_profitability.csv
+├── location_performance.csv
+└── mom_cost_growth.csv
 
 images/
 ├── validation_failures.png
 ├── validation_summary.png
-└── validation_top_issues.png
+├── monthly_profitability.png
+├── location_performance.png
+└── mom_cost_growth.png
 ```
 
 ---
 
 ## Data Quality Validation Framework
 
-A SQL validation framework was created before analysis to test data quality, structural integrity, and reconciliation logic.
+A SQL validation framework was created before analysis to ensure data reliability.
 
 Validation checks covered:
 
@@ -84,113 +94,153 @@ Validation checks covered:
 
 ## Validation Findings
 
-Core structural checks passed successfully, including missing values, duplicate records, negative records, orphan keys, date/month consistency, and sales-to-cost join coverage.
+Core structural checks passed successfully.
 
-Two reconciliation checks failed and were flagged for review:
+Two reconciliation issues were identified:
 
-* `cost_components_not_equal_total_cost`: 553 rows, high severity
-* `vendor_cost_change_pct_mismatch`: 139 rows, medium severity
+* `cost_components_not_equal_total_cost` (553 rows, high severity)
+* `vendor_cost_change_pct_mismatch` (139 rows, medium severity)
 
-These issues indicate calculation inconsistencies rather than structural data failures.
-
-The dataset can move forward to profitability analysis, but the raw `total_cost` and `cost_change_pct` fields should be reviewed or replaced with cleaned calculated fields before final executive conclusions.
-
----
-
-## Validation Outputs
-
-Validation results generated in SQL were exported and processed in Python to create a clean summary dataset.
-
-### Process
-
-1. Created validation checks in SQL
-2. Saved results into `validation_results`
-3. Created final saved table: `validation_results_final`
-4. Exported validation results from pgAdmin as CSV
-5. Loaded results into pandas
-6. Selected key fields:
-
-   * test_name
-   * table_name
-   * issue_count
-   * severity
-   * status
-   * action_taken
-7. Sorted by severity and issue count
-8. Exported clean summary file to:
-
-data/cleaned/validation_summary.csv
-
----
-
-## Key Validation Files
-
-* SQL validation script: sql/00_data_validation_checks.sql
-* Validation output script: sql/02_validation_outputs.sql
-* Full validation export: outputs/validation_results_final.csv
-* Clean validation summary: data/cleaned/validation_summary.csv
-* Validation notebook: notebooks/01_data_validation.ipynb
-
----
-
-## Validation Screenshots
-
-### Validation Failures
-
-![Validation Failures](images/validation_failures.png)
-
-### Validation Summary
-
-![Validation Summary](images/validation_summary.png)
+These issues indicate calculation inconsistencies, not structural failures.
 
 ---
 
 ## Data Quality Decision
 
-The dataset is structurally reliable enough to continue into profitability analysis.
+The dataset is reliable for analysis.
 
-However, two reconciliation issues were documented and flagged:
+However:
 
-* total_cost should be recalculated from its cost components
-* cost_change_pct should be recalculated from actual and prior unit cost
+* `total_cost` was recalculated using cost components
+* `cost_change_pct` was recalculated from unit costs
 
-For downstream analysis, cleaned calculated fields should be used:
-
-total_cost_clean = cogs + labor_cost + packaging_cost + overhead_allocated
-cost_change_pct_clean = (actual_unit_cost - prior_unit_cost) / prior_unit_cost
+All downstream analysis uses cleaned fields.
 
 ---
 
-## Next Analysis Steps
+## Monthly Profitability Analysis
 
-The next phase of the project will focus on SQL-based profitability analysis.
+### Method
 
-Planned analysis files:
+* Aggregated sales data at month, location, and product level
+* Recalculated `total_cost_clean`
+* Joined sales and cost datasets
+* Calculated:
 
-* 02_monthly_profitability.sql
-* 03_location_performance.sql
-* 04_mom_cost_growth.sql
+  * Gross Profit
+  * Gross Margin %
 
-These files will analyze:
+### Key Findings
 
-* Monthly revenue and profitability
-* Gross margin trends
-* Location-level performance
-* Month-over-month cost growth
-* Operational cost drivers
+* Revenue remained stable between **$888K–$1.04M**
+* Gross margin declined from **31.45% → 24.41%**
+* Profit decreased despite stable revenue
+
+### Business Interpretation
+
+Profitability decline is driven by **rising operational costs**, not falling sales.
+
+### Output
+
+`outputs/monthly_profitability.csv`
+
+![Monthly Profitability](images/monthly_profitability.png)
 
 ---
 
-## Senior-Level Project Goals
+## Location Performance Analysis
 
-This project is designed to demonstrate:
+### Method
 
-* Data quality validation before analysis
-* Reproducible SQL workflow
-* Clean Python reporting layer
-* Clear documentation of data issues
-* Business-focused profitability analysis
-* Actionable recommendations linked to measurable outcomes
+* Aggregated revenue and cost by location
+* Calculated profit and margin
+* Ranked locations by profit
+* Flagged below-average margin locations
+
+### Key Findings
+
+* **Toronto Downtown** generates highest profit but lower efficiency
+* Several locations show stable performance
+* **Hamilton and London** underperform in both profit and margin
+
+### Business Interpretation
+
+* High-performing locations still have cost optimization opportunities
+* Underperforming locations require operational improvements
+
+### Output
+
+`outputs/location_performance.csv`
+
+![Location Performance](images/location_performance.png)
+
+---
+
+## Month-over-Month Cost Growth
+
+### Method
+
+* Aggregated monthly clean cost
+* Used SQL `LAG()` to calculate prior month cost
+* Computed cost growth %
+* Flagged spikes above 10%
+
+### Key Findings
+
+* **March cost spike: +14.85%**
+* Other months show normal variation
+
+### Business Interpretation
+
+The spike suggests potential issues such as:
+
+* Vendor price increases
+* Labor or overhead changes
+* Operational inefficiencies
+
+### Output
+
+`outputs/mom_cost_growth.csv`
+
+![MoM Cost Growth](images/mom_cost_growth.png)
+
+---
+
+## Key Insights
+
+* Profitability decline is driven by **cost increases, not revenue loss**
+* Margins are compressing across time
+* Some high-profit locations are inefficient
+* Cost spikes can significantly impact performance
+
+---
+
+## Recommendations
+
+### High Priority
+
+* Investigate March cost spike drivers
+* Audit cost structure in high-revenue locations
+
+### Medium Priority
+
+* Optimize labor and overhead allocation
+* Improve vendor cost monitoring
+
+### Low Priority
+
+* Review pricing strategy if margin compression continues
+
+---
+
+## Senior-Level Capabilities Demonstrated
+
+* Data validation framework implementation
+* SQL-based analytical modeling
+* Use of window functions (`LAG`)
+* Clean vs raw data handling
+* Business-driven insights
+* Structured and reproducible workflow
 
 ---
 
@@ -202,8 +252,8 @@ This project is designed to demonstrate:
 * [x] Validation screenshots created
 * [x] Validation summary exported with Python
 * [x] Validation findings documented
-* [ ] Monthly profitability analysis
-* [ ] Location performance analysis
-* [ ] Cost growth analysis
+* [x] Monthly profitability analysis
+* [x] Location performance analysis
+* [x] Cost growth analysis
 * [ ] Dashboard
 * [ ] Final business recommendations
