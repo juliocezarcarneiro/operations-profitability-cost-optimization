@@ -277,6 +277,10 @@ The project includes a Tableau dashboard designed to support executive decision-
 - Gross Margin Trend
 - Executive Insight Box
 
+*KPI monitoring and margin trend analysis*
+
+![Executive Summary](dashboard-screenshots/dashboard/executive_summary.png)
+
 #### Page 2 — Profitability Drivers
 - Gross Profit by Location
 - Margin by Category
@@ -284,18 +288,23 @@ The project includes a Tableau dashboard designed to support executive decision-
 - Cost Growth Trends
 - Business Recommendations
 
+#### Profitability Drivers
+*Location and category-level profit analysis*
+
+![Profitability Drivers](dashboard-screenshots/dashboard/profitability_drivers.png)
+
 #### Page 3 — Waste & Action Priorities
 - Waste by Category
 - Waste by Location
 - Priority Actions
 
+*Operational improvement roadmap*
+
+![Waste Action Priorities](dashboard-screenshots/dashboard/waste_action_priorities.png)
+
 ### Tableau Public
 
-**Link:** *Coming Soon*
-
-### Dashboard Screenshots
-
-Dashboard screenshots will be added after final dashboard completion.
+**Link:** https://public.tableau.com/app/profile/julio.carneiro/viz/OperationsProfitabilityCostOptimization/ExecutiveSummary
 
 ---
 
@@ -338,22 +347,6 @@ This project demonstrates:
 - Cost optimization analysis
 - Structured and reproducible workflow
 - Executive-level business storytelling
-
----
-
-# Current Status
-
-- [x] Database schema created
-- [x] SQL validation framework created
-- [x] Validation results saved
-- [x] Validation screenshots created
-- [x] Validation summary exported with Python
-- [x] Validation findings documented
-- [x] Monthly profitability analysis
-- [x] Location performance analysis
-- [x] Cost growth analysis
-- [ ] Tableau dashboard
-- [ ] Final business recommendations
 
 ---
 
