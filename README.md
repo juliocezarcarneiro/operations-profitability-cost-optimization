@@ -279,7 +279,7 @@ The project includes a Tableau dashboard designed to support executive decision-
 
 *KPI monitoring and margin trend analysis*
 
-![Executive Summary](dashboard/dashboard-screenshots/executive_summary.png)
+![Executive Summary](dashboard/dashboard-screenshots/executive-summary.png)
 
 #### Page 2 — Profitability Drivers
 - Gross Profit by Location
@@ -291,7 +291,7 @@ The project includes a Tableau dashboard designed to support executive decision-
 #### Profitability Drivers
 *Location and category-level profit analysis*
 
-![Profitability Drivers](dashboard/dashboard-screenshots/profitability_drivers.png)
+![Profitability Drivers](dashboard/dashboard-screenshots/profitability-drivers.png)
 
 #### Page 3 — Waste & Action Priorities
 - Waste by Category
@@ -300,7 +300,7 @@ The project includes a Tableau dashboard designed to support executive decision-
 
 *Operational improvement roadmap*
 
-![Waste Action Priorities](dashboard/dashboard-screenshots/waste_action_priorities.png)
+![Waste Action Priorities](dashboard/dashboard-screenshots/waste-action-priorities.png)
 
 ### Tableau Public
 
