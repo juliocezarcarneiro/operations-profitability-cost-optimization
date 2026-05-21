@@ -373,8 +373,5 @@ This project demonstrates:
 
 ## Author
 
-**Julio Carneiro**  
-Aspiring Data Analyst | SQL | Python | Tableau | Business Analytics
-
-GitHub:  
-https://github.com/juliocezarcarneiro/operations-profitability-cost-optimization
+**Julio Carneiro**
+Data Analyst | SQL | Python | Tableau | Business Analytics
