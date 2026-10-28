@@ -1,377 +1,118 @@
+![Operations Profitability & Cost Optimization](assets/banner.svg)
+
 # Operations Profitability & Cost Optimization
 
-## Project Overview
+**Gross margin fell from 31.45% to 24.41% while revenue held steady. This analysis traces the loss to rising costs, a +14.85% March cost spike, and two underperforming locations.**
 
-This project analyzes restaurant operations data to identify profitability drivers, cost inefficiencies, and opportunities to improve margins.
+![SQL](https://img.shields.io/badge/SQL-1F4E79?style=flat-square&logo=postgresql&logoColor=white) ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-1F4E79?style=flat-square&logo=postgresql&logoColor=white) ![Python](https://img.shields.io/badge/Python-1F4E79?style=flat-square&logo=python&logoColor=white) ![pandas](https://img.shields.io/badge/pandas-1F4E79?style=flat-square&logo=pandas&logoColor=white) ![Tableau](https://img.shields.io/badge/Tableau-1F4E79?style=flat-square&logo=tableau&logoColor=white)
 
-Using **SQL, Python, and Tableau**, the analysis follows a structured workflow to answer a key business question:
-
-> **Where is profitability being lost, why is it happening, and what actions should leadership prioritize?**
-
-Key focus areas include:
-
-- Margin compression
-- Cost inefficiencies
-- Underperforming locations
-- Cost growth trends
-- Operational improvement opportunities
-- Data quality and reconciliation issues
+**[View the live Tableau dashboard](https://public.tableau.com/app/profile/julio.carneiro/viz/OperationsProfitabilityCostOptimization/ExecutiveSummary)**
 
 ---
 
-## Business Objective
+## Business problem
 
-The objective of this project is to identify operational profitability drivers and determine:
+A multi-location restaurant group sees stable revenue but shrinking profit. Leadership needs to know:
 
-- Where profitability is being lost
-- Why it is happening
-- Which operational actions leadership should prioritize
+> **Where is profitability being lost, why is it happening, and what should we prioritize?**
 
----
-
-## Business Questions
-
-This project aims to answer:
-
-- Which locations are most profitable?
+- Which locations are most and least profitable?
 - Are costs growing faster than revenue?
-- Where is profitability being lost?
 - Which product categories underperform?
-- What operational actions should leadership prioritize?
+- What actions should leadership take first?
 
----
+## Approach
 
-## Tools Used
+1. **Validate the data** with a SQL validation framework (missing values, duplicates, negative values, orphan keys, date consistency, join coverage, cost reconciliation).
+2. **Clean** the two reconciliation issues found, recalculating total cost from its components.
+3. **Analyze in SQL**: monthly profitability, location performance, and month-over-month cost growth using the `LAG()` window function.
+4. **Prepare the dashboard dataset** in Python (pandas).
+5. **Build an executive dashboard** in Tableau with three pages: Executive Summary, Profitability Drivers, Waste & Action Priorities.
 
-- PostgreSQL
-- pgAdmin
-- SQL
-- Python
-- pandas
-- Jupyter Notebook
-- Tableau Public
-- GitHub
+The dataset is synthetic, generated in `notebooks/00_data_generation.ipynb` to model a realistic restaurant group.
 
----
+## Key findings
 
-## Project Workflow
+| Finding | Number | What it means |
+|---|---:|---|
+| Gross margin compression | 31.45% → 24.41% | Profit is falling even though sales are not |
+| Monthly revenue range | $888K – $1.04M | Revenue is stable, so the problem is cost |
+| March cost spike | +14.85% MoM | One month drove a large share of the margin loss |
+| Weakest locations | Hamilton, London | Below average on both profit and margin |
+| Highest-profit location | Toronto Downtown | Most profit, but lower efficiency, so savings are still available |
+| Data issues fixed | 553 + 139 rows | Cost components did not add up; vendor cost % mismatched |
 
-The analysis follows a structured workflow:
+### Recommendations
 
-1. Data validation
-2. Clean data preparation
-3. SQL-based analysis
-4. Python cleaning & feature engineering
-5. Dashboard dataset creation
-6. Tableau dashboard development
-7. Business insights and recommendations
+| Priority | Action |
+|---|---|
+| High | Investigate the drivers behind the March cost spike |
+| High | Audit cost structures in high-revenue locations |
+| Medium | Optimize labor and overhead allocation |
+| Medium | Improve vendor cost monitoring |
+| Low | Review pricing if margin compression continues |
 
----
+## Visuals
 
-## Project Structure
+**Executive Summary**
+![Executive Summary](dashboard/dashboard-screenshots/executive-summary.png)
+
+**Profitability Drivers**
+![Profitability Drivers](dashboard/dashboard-screenshots/profitability-drivers.png)
+
+**Waste & Action Priorities**
+![Waste & Action Priorities](dashboard/dashboard-screenshots/waste-action-priorities.png)
+
+<details>
+<summary>SQL analysis outputs and validation results</summary>
+
+**Monthly profitability**
+![Monthly Profitability](images/monthly_profitability.png)
+
+**Location performance**
+![Location Performance](images/location_performance.png)
+
+**Month-over-month cost growth**
+![MoM Cost Growth](images/mom_cost_growth.png)
+
+**Validation summary**
+![Validation Summary](images/validation_summary.png)
+
+**Validation failures**
+![Validation Failures](images/validation_failures.png)
+
+</details>
+
+## How to run
+
+1. **Database:** create a PostgreSQL database and run the scripts in `sql/` in order (`00` to `05`). After `01_create_tables.sql`, import the CSVs from `data/raw/` into the matching tables (pgAdmin's Import tool or `\copy`).
+2. **Notebooks:** the notebooks were built in Google Colab. To run locally:
+   ```bash
+   pip install -r requirements.txt
+   jupyter notebook notebooks/
+   ```
+   Skip the Google Drive mount cell and point the paths to `data/`.
+3. **Dashboard:** open `dashboard/tableau/Operations Profitability & Cost Optimization.twbx` in Tableau, or use the live link above.
+
+## Folder structure
 
 ```text
 operations-profitability-cost-optimization/
-│
-├── sql/
-│   ├── 00_data_validation_checks.sql
-│   ├── 01_create_tables.sql
-│   ├── 02_validation_outputs.sql
-│   ├── 03_monthly_profitability.sql
-│   ├── 04_location_performance.sql
-│   └── 05_mom_cost_growth.sql
-│
-├── notebooks/
-│   └── 01_data_validation.ipynb
-│
 ├── data/
-│   └── cleaned/
-│       ├── validation_summary.csv
-│       └── dashboard_final.csv
-│
-├── outputs/
-│   ├── validation_results.csv
-│   ├── monthly_profitability.csv
-│   ├── location_performance.csv
-│   └── mom_cost_growth.csv
-│
-├── images/
-│   ├── validation_failures.png
-│   ├── validation_summary.png
-│   ├── monthly_profitability.png
-│   ├── location_performance.png
-│   └── mom_cost_growth.png
-│
+│   ├── raw/                  # sales, costs, locations, products, vendor prices, waste
+│   ├── cleaned/              # validated, dashboard-ready data
+│   └── data_dictionary.csv
+├── sql/                      # 00 validation → 05 cost growth
+├── notebooks/                # 00 data generation, 01 validation, 02 dashboard dataset
+├── outputs/                  # SQL query results (CSV)
+├── images/                   # charts for this README
 ├── dashboard/
-│   └── dashboard_screenshots/
-│
-└── README.md
+│   ├── tableau/              # Tableau workbook (.twbx)
+│   └── dashboard-screenshots/
+└── assets/                   # banner
 ```
 
----
+## Contact
 
-# Data Quality Validation Framework
-
-A SQL validation framework was created before analysis to ensure data reliability and analytical accuracy.
-
-### Validation Checks Covered
-
-- Missing values
-- Duplicate records
-- Negative values
-- Orphan keys
-- Date and month consistency
-- Sales-to-cost join coverage
-- Category consistency
-- Cost reconciliation checks
-- Vendor cost percentage reconciliation
-
----
-
-## Validation Findings
-
-Core structural checks passed successfully.
-
-Two reconciliation issues were identified:
-
-| Validation Test | Rows Affected | Severity |
-|---|---:|---|
-| `cost_components_not_equal_total_cost` | 553 | High |
-| `vendor_cost_change_pct_mismatch` | 139 | Medium |
-
-These issues represent **calculation inconsistencies**, not structural failures.
-
-### Validation Screenshots
-
-#### Validation Summary
-
-![Validation Summary](images/validation_summary.png)
-
-#### Validation Failures
-
-![Validation Failures](images/validation_failures.png)
-
----
-
-## Data Quality Decision
-
-The dataset is considered reliable for analysis.
-
-However, to improve analytical accuracy:
-
-- `total_cost_clean` was recalculated using cost components
-- `cost_change_pct_clean` was recalculated from unit costs
-
-All downstream analysis uses **cleaned fields**.
-
----
-
-# SQL Analysis
-
-## 1. Monthly Profitability Analysis
-
-### Method
-
-- Aggregated sales data at month, location, and product level
-- Recalculated `total_cost_clean`
-- Joined sales and cost datasets
-
-Calculated:
-
-- Revenue
-- Gross Profit
-- Gross Margin %
-
-### Key Findings
-
-- Revenue remained stable between **$888K–$1.04M**
-- Gross margin declined from **31.45% → 24.41%**
-- Profit decreased despite stable revenue
-
-### Business Interpretation
-
-Profitability decline appears to be driven by **rising operational costs rather than declining sales**.
-
-### Output
-
-`outputs/monthly_profitability.csv`
-
-### Screenshot
-
-![Monthly Profitability](images/monthly_profitability.png)
-
----
-
-## 2. Location Performance Analysis
-
-### Method
-
-- Aggregated revenue and cost by location
-- Calculated profit and margin
-- Ranked locations by profit
-- Flagged below-average margin locations
-
-### Key Findings
-
-- **Toronto Downtown** generates the highest profit but lower efficiency
-- Several locations show stable performance
-- **Hamilton and London** underperform in both profit and margin
-
-### Business Interpretation
-
-- High-performing locations still present cost optimization opportunities
-- Underperforming locations require operational improvements
-
-### Output
-
-`outputs/location_performance.csv`
-
-### Screenshot
-
-![Location Performance](images/location_performance.png)
-
----
-
-## 3. Month-over-Month Cost Growth
-
-### Method
-
-- Aggregated monthly clean cost
-- Used SQL `LAG()` window function to calculate prior month cost
-- Computed monthly cost growth %
-- Flagged spikes above 10%
-
-### Key Findings
-
-- **March cost spike: +14.85%**
-- Other months show expected variation
-
-### Business Interpretation
-
-The March spike suggests possible operational issues such as:
-
-- Vendor price increases
-- Labor cost increases
-- Overhead allocation changes
-- Operational inefficiencies
-
-### Output
-
-`outputs/mom_cost_growth.csv`
-
-### Screenshot
-
-![MoM Cost Growth](images/mom_cost_growth.png)
-
----
-
-# Tableau Dashboard
-
-The project includes a Tableau dashboard designed to support executive decision-making.
-
-### Dashboard Structure
-
-#### Page 1 — Executive Summary
-- KPI Cards
-- Revenue vs Cost Trend
-- Gross Margin Trend
-- Executive Insight Box
-
-*KPI monitoring and margin trend analysis*
-
-![Executive Summary](dashboard/dashboard-screenshots/executive-summary.png)
-
-#### Page 2 — Profitability Drivers
-- Gross Profit by Location
-- Margin by Category
-- Revenue vs Cost Analysis
-- Cost Growth Trends
-- Business Recommendations
-
-#### Profitability Drivers
-*Location and category-level profit analysis*
-
-![Profitability Drivers](dashboard/dashboard-screenshots/profitability-drivers.png)
-
-#### Page 3 — Waste & Action Priorities
-- Waste by Category
-- Waste by Location
-- Priority Actions
-
-*Operational improvement roadmap*
-
-![Waste Action Priorities](dashboard/dashboard-screenshots/waste-action-priorities.png)
-
-### Tableau Public
-
-**Link:** https://public.tableau.com/app/profile/julio.carneiro/viz/OperationsProfitabilityCostOptimization/ExecutiveSummary
-
----
-
-# Key Insights
-
-- Profitability decline is driven primarily by **cost increases, not revenue loss**
-- Gross margins compressed over time
-- Some high-profit locations still show operational inefficiencies
-- Cost spikes significantly impact profitability performance
-- Data validation materially impacts business conclusions
-
----
-
-# Business Recommendations
-
-## High Priority
-- Investigate drivers behind the March cost spike
-- Audit cost structures in high-revenue locations
-
-## Medium Priority
-- Optimize labor and overhead allocation
-- Improve vendor cost monitoring
-
-## Low Priority
-- Review pricing strategy if margin compression continues
-
----
-
-# Senior-Level Capabilities Demonstrated
-
-This project demonstrates:
-
-- Data validation framework implementation
-- SQL-based analytical modeling
-- SQL window functions (`LAG`)
-- Clean vs raw data handling
-- Business-driven analysis
-- KPI tracking
-- Dashboard development
-- Cost optimization analysis
-- Structured and reproducible workflow
-- Executive-level business storytelling
-
----
-
-# Future Improvements
-
-- Forecasting
-- Anomaly detection
-- Predictive analytics
-- Executive KPI benchmarking
-- Automated reporting
-
----
-
-# Lessons Learned
-
-- Data validation is critical before analysis
-- Business questions matter more than dashboards
-- SQL becomes more valuable when tied to operational decisions
-- Small data quality issues can significantly impact conclusions
-- Executive dashboards should support decisions, not only visuals
-- Business storytelling improves the impact of technical analysis
-
----
-
-## Author
-
-**Julio Carneiro**
-Data Analyst | SQL | Python | Tableau | Business Analytics
+**Julio Carneiro** · Data Analyst · Toronto, ON
+[LinkedIn](https://www.linkedin.com/in/juliocezarcarneiro/) · [Portfolio](https://github.com/juliocezarcarneiro) · [Email](mailto:juliocezarcarneiro@outlook.com)
